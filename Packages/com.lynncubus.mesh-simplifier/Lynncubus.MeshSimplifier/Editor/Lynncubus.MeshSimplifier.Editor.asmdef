@@ -1,0 +1,19 @@
+{
+    "name": "Lynncubus.MeshSimplifier.Editor",
+    "rootNamespace": "",
+    "references": [
+        "nadena.dev.ndmf",
+        "Lynncubus.MeshSimplifier.Runtime",
+        "Lynncubus.MeshSimplifier.Shared",
+        "Meshia.MeshSimplification.Runtime"
+    ],
+    "includePlatforms": [],
+    "excludePlatforms": [],
+    "allowUnsafeCode": false,
+    "overrideReferences": false,
+    "precompiledReferences": [],
+    "autoReferenced": true,
+    "defineConstraints": [],
+    "versionDefines": [],
+    "noEngineReferences": false
+}

@@ -62,3 +62,8 @@ crashlytics-build.properties
 Assets/PackageMakerWindowData.asset*
 .idea
 .vscode
+
+# Custom assets
+Assets/XR*
+Assets/IKUSIA*
+Assets/buh.unity*

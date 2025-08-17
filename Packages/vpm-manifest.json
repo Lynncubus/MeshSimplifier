@@ -1,1 +1,56 @@
-{"dependencies": {}, "locked": {}}
+{
+  "dependencies": {
+    "jp.lilxyzw.liltoon": {
+      "version": "2.1.10"
+    },
+    "vrchat.blackstartx.gesture-manager": {
+      "version": "3.9.4"
+    },
+    "com.ramtype0.meshia.mesh-simplification": {
+      "version": "3.0.0"
+    }
+  },
+  "locked": {
+    "com.vrchat.avatars": {
+      "version": "3.8.2",
+      "dependencies": {
+        "com.vrchat.base": "3.8.2"
+      }
+    },
+    "nadena.dev.ndmf": {
+      "version": "1.8.3",
+      "dependencies": {}
+    },
+    "com.vrchat.base": {
+      "version": "3.8.2",
+      "dependencies": {}
+    },
+    "nadena.dev.modular-avatar": {
+      "version": "1.13.4",
+      "dependencies": {
+        "com.vrchat.avatars": ">=3.7.4",
+        "nadena.dev.ndmf": ">=1.8.0 <2.0.0-a"
+      }
+    },
+    "jp.lilxyzw.liltoon": {
+      "version": "2.1.10",
+      "dependencies": {}
+    },
+    "vrchat.blackstartx.gesture-manager": {
+      "version": "3.9.4",
+      "dependencies": {
+        "com.vrchat.avatars": ">=3.5.2 <3.9.X"
+      }
+    },
+    "com.ramtype0.meshia.mesh-simplification": {
+      "version": "3.0.0",
+      "dependencies": {
+        "com.anatawa12.custom-localization-for-editor-extension": "^1.2.1"
+      }
+    },
+    "com.anatawa12.custom-localization-for-editor-extension": {
+      "version": "1.2.1",
+      "dependencies": {}
+    }
+  }
+}

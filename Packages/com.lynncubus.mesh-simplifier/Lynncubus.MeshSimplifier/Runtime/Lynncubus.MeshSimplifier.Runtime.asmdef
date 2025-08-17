@@ -1,0 +1,16 @@
+{
+    "name": "Lynncubus.MeshSimplifier.Runtime",
+    "rootNamespace": "",
+    "references": [
+        "Lynncubus.MeshSimplifier.Shared"
+    ],
+    "includePlatforms": [],
+    "excludePlatforms": [],
+    "allowUnsafeCode": false,
+    "overrideReferences": false,
+    "precompiledReferences": [],
+    "autoReferenced": true,
+    "defineConstraints": [],
+    "versionDefines": [],
+    "noEngineReferences": false
+}
