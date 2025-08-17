@@ -47,29 +47,59 @@ namespace Lynncubus.MeshSimplifier.Editor
                         targets.Add(target);
                     }
 
-                    // Distribute target triangle counts proportionally
+                    //for (int i = 0; i < 5; i++)
+                    //{
+                    //    var currentTotal = targets.Sum(t => t.triangleCount);
+                    //    var adjustableTotal = targets.Where(t => t.Entry.Enabled).Sum(t => t.triangleCount);
+
+                    //    if (adjustableTotal == 0) break; // No adjustable triangles left
+
+                    //    var adjustableTargetCount = globalTargetTriangleCount - (currentTotal - adjustableTotal);
+                    //    if (adjustableTargetCount <= 0) break; // No more triangles to adjust
+
+                    //    var proportion = (float)adjustableTargetCount / adjustableTotal;
+                    //    foreach (var target in targets)
+                    //    {
+                    //        if (!target.Entry.Enabled) continue;
+
+                    //        var originalTriangleCount = target.Entry.OriginalTriangleCount;
+                    //        var currentTriangleCount = target.triangleCount;
+
+                    //        var newTriangleCount = Mathf.Clamp((int)(currentTriangleCount * proportion), 0, originalTriangleCount);
+                    //        target.triangleCount = newTriangleCount;
+                    //    }
+                    //}
+
                     for (int i = 0; i < 5; i++)
                     {
+                        // Only consider enabled targets
+                        var enabledTargets = targets.Where(t => t.Entry.Enabled).ToList();
                         var currentTotal = targets.Sum(t => t.triangleCount);
-                        var adjustableTotal = targets.Where(t => t.Entry.Enabled).Sum(t => t.triangleCount);
+                        var adjustableTotal = enabledTargets.Sum(t => t.triangleCount);
 
                         if (adjustableTotal == 0) break; // No adjustable triangles left
 
                         var adjustableTargetCount = globalTargetTriangleCount - (currentTotal - adjustableTotal);
                         if (adjustableTargetCount <= 0) break; // No more triangles to adjust
 
-                        var proportion = (float)adjustableTargetCount / adjustableTotal;
-                        foreach (var target in targets)
+                        // Calculate total quality weight
+                        float totalQuality = enabledTargets.Sum(t => Mathf.Clamp01(t.Entry.quality));
+
+                        foreach (var target in enabledTargets)
                         {
-                            if (!target.Entry.Enabled) continue;
-
                             var originalTriangleCount = target.Entry.OriginalTriangleCount;
-                            var currentTriangleCount = target.triangleCount;
-
-                            var newTriangleCount = Mathf.Clamp((int)(currentTriangleCount * (proportion * target.Entry.quality)), 0, originalTriangleCount);
+                            float quality = Mathf.Clamp01(target.Entry.quality);
+                            // If all qualities are zero, fallback to equal distribution
+                            float weight = (totalQuality > 0f) ? (quality / totalQuality) : (1f / enabledTargets.Count);
+                            int newTriangleCount = Mathf.Clamp(
+                                Mathf.RoundToInt(adjustableTargetCount * weight),
+                                0,
+                                originalTriangleCount
+                            );
                             target.triangleCount = newTriangleCount;
                         }
                     }
+
 
                     foreach (var target in targets)
                     {
