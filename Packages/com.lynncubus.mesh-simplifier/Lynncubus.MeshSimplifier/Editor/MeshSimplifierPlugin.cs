@@ -112,9 +112,6 @@ namespace Lynncubus.MeshSimplifier.Editor
 
                         UnityEngine.Object.DestroyImmediate(component);
                     }
-
-
-
                 });
         }
     }
