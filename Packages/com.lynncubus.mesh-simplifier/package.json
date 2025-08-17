@@ -1,7 +1,7 @@
 {
   "name": "com.lynncubus.mesh-simplifier",
   "displayName": "Lynn's Mesh Simplifier",
-  "version": "0.0.1",
+  "version": "0.0.2",
   "vrchatVersion": "2022.1.1",
   "author": {
     "name": "Lynncubus",
@@ -10,6 +10,6 @@
   "vpmDependencies": {
     "nadena.dev.modular-avatar": ">=1.9.9 <2.0.0-a",
     "com.vrchat.avatars": ">=3.1.0 <999.0.0-a",
-    "meshia.mesh-simplification": ">=3.0.0 <4.0.0-a"
+    "com.ramtype0.meshia.mesh-simplification": ">=3.0.0 <4.0.0-a"
   }
 }
