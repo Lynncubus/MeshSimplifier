@@ -64,6 +64,8 @@ namespace Lynncubus.MeshSimplifier.Editor
 
             foreach (var entry in my.Entries)
             {
+                var entryObject = serializedObject.FindProperty("Entries").GetArrayElementAtIndex(my.Entries.IndexOf(entry));
+
                 EditorGUILayout.BeginHorizontal();
                 entry.Enabled = EditorGUILayout.Toggle(entry.Enabled, GUILayout.Width(20));
                 //entry.Fixed = EditorGUILayout.Toggle(entry.Fixed, GUILayout.Width(20));
@@ -77,11 +79,32 @@ namespace Lynncubus.MeshSimplifier.Editor
 
                 GUI.enabled = true;
                 EditorGUILayout.EndHorizontal();
+
+                entry.PropertiesExpanded = EditorGUILayout.Foldout(entry.PropertiesExpanded, "Properties", true);
+                if (entry.PropertiesExpanded)
+                {
+                    entry.PreserveBorderEdges = EditorGUILayout.Toggle("Preserve Border Edges", entry.PreserveBorderEdges);
+                    entry.PreserveSurfaceCurvature = EditorGUILayout.Toggle("Preserve Surface Curvature", entry.PreserveSurfaceCurvature);
+                    entry.UseBarycentricCoordinateInterpolation = EditorGUILayout.Toggle("Use Barycentric Coordinate Interpolation", entry.UseBarycentricCoordinateInterpolation);
+                    EditorGUILayout.Space();
+                    entry.EnableSmartLink = EditorGUILayout.Toggle("Enable Smart Link", entry.EnableSmartLink);
+                    if (entry.EnableSmartLink)
+                    {
+                        entry.VertexLinkDistance = EditorGUILayout.FloatField("Vertex Link Distance", entry.VertexLinkDistance);
+                        entry.VertexLinkMinNormalDot = EditorGUILayout.Slider("Vertex Link Min Normal Dot", entry.VertexLinkMinNormalDot, 0.0f, 1.0f);
+                        entry.VertexLinkColorDistance = EditorGUILayout.FloatField("Vertex Link Color Distance", entry.VertexLinkColorDistance);
+                        entry.VertexLinkUvDistance = EditorGUILayout.Slider("Vertex Link UV Distance", entry.VertexLinkUvDistance, 0, 1.41421356237f);
+                    }
+                }
+            }
+
+            if (GUILayout.Button("Reset Entries"))
+            {
+                my.RefreshEntries(true);
             }
 
             EditorGUILayout.Space();
 
-            GUI.enabled = false;
             base.OnInspectorGUI();
         }
     }

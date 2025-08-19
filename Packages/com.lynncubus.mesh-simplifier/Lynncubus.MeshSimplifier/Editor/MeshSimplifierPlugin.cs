@@ -42,8 +42,10 @@ namespace Lynncubus.MeshSimplifier.Editor
                         {
                             Entry = entry,
                             originalMesh = MeshSimplifierUtil.GetMesh(entry.Renderer),
+                            targetMesh = new Mesh(),
                             triangleCount = entry.OriginalTriangleCount,
                         };
+                        target.targetMesh.name = $"{entry.Renderer.name}_Simplified";
                         targets.Add(target);
                     }
 
@@ -70,12 +72,19 @@ namespace Lynncubus.MeshSimplifier.Editor
                     //    }
                     //}
 
-                    for (int i = 0; i < 5; i++)
+                    var maxIterations = 50;
+                    var minIterations = 5;
+                    var iterations = 0;
+                    var simplifiedTriangleCount = targets.Sum(t => t.triangleCount);
+                    Debug.Log($"Iteration 0: Total triangles simplified to {simplifiedTriangleCount}.");
+                    for (; iterations < maxIterations; iterations++)
                     {
                         // Only consider enabled targets
                         var enabledTargets = targets.Where(t => t.Entry.Enabled).ToList();
                         var currentTotal = targets.Sum(t => t.triangleCount);
                         var adjustableTotal = enabledTargets.Sum(t => t.triangleCount);
+
+                        if (currentTotal <= globalTargetTriangleCount && iterations >= minIterations) break;
 
                         if (adjustableTotal == 0) break; // No adjustable triangles left
 
@@ -98,18 +107,19 @@ namespace Lynncubus.MeshSimplifier.Editor
                             );
                             target.triangleCount = newTriangleCount;
                         }
+
+                        simplifiedTriangleCount = targets.Sum(t => t.triangleCount);
+                        Debug.Log($"Iteration {iterations + 1}: Total triangles simplified to {simplifiedTriangleCount}.");
                     }
 
 
                     foreach (var target in targets)
                     {
+                        if (!target.Entry.Enabled) continue;
                         Debug.Log($"Simplifying {target.Entry.Renderer.name} from {target.Entry.OriginalTriangleCount} triangles to {target.triangleCount} triangles.");
-
-                        target.targetMesh = new Mesh();
-                        target.targetMesh.name = $"{target.Entry.Renderer.name}_Simplified";
                     }
-                    var simplifiedTriangleCount = targets.Sum(t => t.triangleCount);
-                    Debug.Log($"Total simplified triangles: {simplifiedTriangleCount}");
+                    simplifiedTriangleCount = targets.Sum(t => t.triangleCount);
+                    Debug.Log($"Total simplified triangles: {simplifiedTriangleCount} after {iterations} iterations.");
 
                     using (ListPool<(Mesh Mesh, MeshiaStuff.MeshSimplificationTarget Target, MeshiaStuff.MeshSimplifierOptions Options, Mesh Destination)>.Get(out var parameters))
                     {
@@ -124,7 +134,15 @@ namespace Lynncubus.MeshSimplifier.Editor
                             };
                             var meshiaOptions = new MeshiaStuff.MeshSimplifierOptions
                             {
-                                PreserveBorderEdges = true,
+                                PreserveBorderEdges = target.Entry.PreserveBorderEdges,
+                                PreserveSurfaceCurvature = target.Entry.PreserveSurfaceCurvature,
+                                UseBarycentricCoordinateInterpolation = target.Entry.UseBarycentricCoordinateInterpolation,
+                                EnableSmartLink = target.Entry.EnableSmartLink,
+                                MinNormalDot = target.Entry.MinNormalDot,
+                                VertexLinkDistance = target.Entry.VertexLinkDistance,
+                                VertexLinkMinNormalDot = target.Entry.VertexLinkMinNormalDot,
+                                VertexLinkColorDistance = target.Entry.VertexLinkColorDistance,
+                                VertexLinkUvDistance = target.Entry.VertexLinkUvDistance,
                             };
 
                             parameters.Add((target.originalMesh, meshiaTarget, meshiaOptions, target.targetMesh));
@@ -132,13 +150,24 @@ namespace Lynncubus.MeshSimplifier.Editor
 
                         MeshiaStuff.MeshSimplifier.SimplifyBatch(parameters);
 
+                        var endTriangleCount = 0;
                         foreach (var target in targets)
                         {
-                            if (!target.Entry.Enabled) continue;
+                            if (!target.Entry.Enabled)
+                            {
+                                Debug.Log($"Skipping {target.Entry.Renderer.name} is {target.Entry.OriginalTriangleCount} triangles.");
+                                endTriangleCount += target.Entry.OriginalTriangleCount;
+                                continue;
+                            }
+                            Debug.Log($"Simplified {target.Entry.Renderer.name} to {target.targetMesh.GetTriangleCount()} with target {target.triangleCount} from {target.Entry.OriginalTriangleCount} triangles.");
+                            endTriangleCount += target.targetMesh.GetTriangleCount();
+
                             var renderer = target.Entry.Renderer;
                             AssetDatabase.AddObjectToAsset(target.targetMesh, ctx.AssetContainer);
                             MeshSimplifierUtil.SetMesh(renderer, target.targetMesh);
                         }
+
+                        Debug.Log($"Total triangles after simplification: {endTriangleCount}.");
 
                         UnityEngine.Object.DestroyImmediate(component);
                     }
